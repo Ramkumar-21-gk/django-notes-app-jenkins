@@ -1,16 +1,15 @@
-@Library("Shared") _
-pipeline {
+@Library ("Shared") _
+pipeline{
     agent { label "vinod"}
-
-    stages {
-        stage('Hello') {
-            steps {
+    stages{
+        stage("hello") {
+            steps{
                 script{
                     hello()
                 }
             }
         }
-        stage('Clone') {
+        stage('Code') {
             steps {
                 script{
                     clone("https://github.com/Ramkumar-21-gk/django-notes-app-jenkins.git","main")
@@ -19,25 +18,25 @@ pipeline {
         }
         stage('Build') {
             steps {
-                echo "This is building the code"
                 script{
-                    docker_build("notes-app","latest","ramkinetic14")
+                    docker_build("notes-app-jenkins","latest","ramkinetic14")
                 }
             }
         }
-        stage('Login and Push to DockerHub') {
+        
+        stage('push to DockerHub') {
             steps {
-                echo "Login and Push to DockerHub"
                 script{
-                    docker_push("notes-app","latest","ramkinetic14")
+                    docker_push("notes-app-jenkins","latest","ramkinetic14")
                 }
             }
         }
+        
         stage('Deploy') {
             steps {
-                echo 'This is Deploying the app'
-                sh 'docker compose down && docker compose up -d'
-                
+                script{
+                    docker_compose()
+                }
             }
         }
     }
